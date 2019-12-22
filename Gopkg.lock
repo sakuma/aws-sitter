@@ -15,7 +15,7 @@
   version = "v1.13.3"
 
 [[projects]]
-  digest = "1:746f38b62f00efb405a9ec61b924be5b1a3a83784af2fdd131514ca8f63466e4"
+  digest = "1:f07a2394714a9ae1ec7e806bff1a5b8f041ccd66686344c49642d43d7ea3f62f"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -54,16 +54,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = ""
-  revision = "a25ea3950893fa501b1fc9619eb1b3546c7ad3a0"
-  version = "v1.26.5"
-
-[[projects]]
-  digest = "1:5a53f6ef09fb1ac261a97f8a72e8837ff53cbaa969022a6679da210e4cbe9b0f"
-  name = "github.com/go-yaml/yaml"
-  packages = ["."]
-  pruneopts = ""
-  revision = "1f64d6156d11335c3f22d9330b0ad14fc1e789ce"
-  version = "v2.2.7"
+  revision = "f454f7e9949b40071254bd1e86a87d2b3e3f9d5d"
+  version = "v1.26.7"
 
 [[projects]]
   digest = "1:13fe471d0ed891e8544eddfeeb0471fd3c9f2015609a1c000aefdedf52a19d40"
@@ -88,7 +80,6 @@
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/ec2",
-    "github.com/go-yaml/yaml",
     "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"

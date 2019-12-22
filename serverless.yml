@@ -28,6 +28,7 @@ package:
     - ./**
   include:
     - ./bin/**
+    - ./instances.yml
 
 functions:
   timer:
