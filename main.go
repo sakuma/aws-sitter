@@ -13,16 +13,17 @@ import (
 )
 
 type Instance struct {
-	Region string `toml:region`
-	Type   string `toml:type`
-	Name   string `toml:name`
-	ID     string `toml:id`
+	Region   string `yaml:region`
+	Type     string `yaml:type`
+	Name     string `yaml:name`
+	ID       string `yaml:id`
+	StopOnly bool   `yaml:stop_only`
 }
 
-func ReadInstanceFile(path string) ([]Instance, error) {
+func readInstanceFile(path string) ([]Instance, error) {
 	// TODO: error handling
 	buf, _ := ioutil.ReadFile("./instances.yml")
-	data := make([]Instance, 20)
+	data := make([]Instance, 50)
 
 	// TODO: error handling
 	err := yaml.Unmarshal(buf, &data)
@@ -33,7 +34,7 @@ func ReadInstanceFile(path string) ([]Instance, error) {
 	return data, nil
 }
 
-func isRunnable(t time.Time) bool {
+func isActive(s Instance) bool {
 	// TODO: force runnning
 	if holiday.IsHoliday(t) {
 		return false
@@ -46,23 +47,13 @@ func isRunnable(t time.Time) bool {
 
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler() (string, error) {
-	fmt.Println("call Handler")
-
-	t := time.Now()
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-	current := t.In(jst)
 
 	// TODO: error handling
-	instances, _ := ReadInstanceFile("./instances.yml")
+	instances, _ := readInstanceFile("./instances.yml")
 	for _, s := range instances {
-		fmt.Println("Region: ", s.Region)
-		fmt.Println("Type: ", s.Type)
-		fmt.Println("Name: ", s.Name)
-		fmt.Println("ID: ", s.ID)
-
 		switch s.Type {
 		case "ec2":
-			if isRunnable(current) {
+			if isActive(s) {
 				ec2controller.StartInstance(s.ID)
 				fmt.Println("succeeded: start instance.")
 			} else {
@@ -70,7 +61,7 @@ func Handler() (string, error) {
 				fmt.Println("succeeded: stop instance.")
 			}
 		case "rds":
-			if isRunnable(current) {
+			if isActive(s) {
 				rdscontroller.StartInstance(s.ID)
 				fmt.Println("succeeded: start instance.")
 			} else {
