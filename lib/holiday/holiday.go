@@ -1,7 +1,10 @@
 package holiday
 
-func IsHoliday() bool {
-	return true
+import "time"
+
+func IsHoliday(t time.Time) bool {
+	// TODO: national holiday
+	return t.Weekday() == time.Saturday || t.Weekday() == time.Sunday
 }
 
 func IsRunnable() bool {

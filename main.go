@@ -35,7 +35,7 @@ func ReadInstanceFile(path string) ([]Instance, error) {
 
 func isRunnable(t time.Time) bool {
 	// TODO: force runnning
-	if holiday.IsHoliday() {
+	if holiday.IsHoliday(t) {
 		return false
 	}
 	if holiday.IsRunnable() {
