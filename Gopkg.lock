@@ -15,7 +15,7 @@
   version = "v1.13.3"
 
 [[projects]]
-  digest = "1:f07a2394714a9ae1ec7e806bff1a5b8f041ccd66686344c49642d43d7ea3f62f"
+  digest = "1:a33f0611c3913e9244cee68a9fc786056dcf914d1b134967bfc26f9584fdd6ca"
   name = "github.com/aws/aws-sdk-go"
   packages = [
     "aws",
@@ -42,6 +42,7 @@
     "internal/sdkrand",
     "internal/sdkuri",
     "internal/shareddefaults",
+    "internal/strings",
     "private/protocol",
     "private/protocol/ec2query",
     "private/protocol/json/jsonutil",
@@ -54,8 +55,8 @@
     "service/sts/stsiface",
   ]
   pruneopts = ""
-  revision = "f454f7e9949b40071254bd1e86a87d2b3e3f9d5d"
-  version = "v1.26.7"
+  revision = "8504021ea14c80e18b9dc7268df1f0756edf5277"
+  version = "v1.28.14"
 
 [[projects]]
   digest = "1:13fe471d0ed891e8544eddfeeb0471fd3c9f2015609a1c000aefdedf52a19d40"
@@ -65,12 +66,12 @@
   revision = "c2b33e84"
 
 [[projects]]
-  digest = "1:5a53f6ef09fb1ac261a97f8a72e8837ff53cbaa969022a6679da210e4cbe9b0f"
+  digest = "1:2efc9662a6a1ff28c65c84fc2f9030f13d3afecdb2ecad445f3b0c80e75fc281"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "1f64d6156d11335c3f22d9330b0ad14fc1e789ce"
-  version = "v2.2.7"
+  revision = "53403b58ad1b561927d19068c655246f2db79d48"
+  version = "v2.2.8"
 
 [solve-meta]
   analyzer-name = "dep"
