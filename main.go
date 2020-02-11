@@ -11,10 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func isActive(t time.Time) bool {
-	return holiday.IsHoliday()
-}
-
 type Instance struct {
 	Region string `toml:region`
 	Type   string `toml:type`
@@ -36,6 +32,17 @@ func ReadInstanceFile(path string) ([]Instance, error) {
 	return data, nil
 }
 
+func isRunnable(t time.Time) bool {
+	// TODO: force runnning
+	if holiday.IsHoliday() {
+		return false
+	}
+	if holiday.IsRunnable() {
+		return true
+	}
+	return false
+}
+
 // Handler is our lambda handler invoked by the `lambda.Start` function call
 func Handler() (string, error) {
 	fmt.Println("call Handler")
@@ -52,13 +59,17 @@ func Handler() (string, error) {
 		fmt.Println("Name: ", s.Name)
 		fmt.Println("ID: ", s.ID)
 
-
-		if isActive(current) {
-			ec2controller.StartInstance(s.ID)
-			fmt.Println("succeeded: start instance.")
-		} else {
-			ec2controller.StopInstance(s.ID)
-			fmt.Println("succeeded: stop instance.")
+		switch s.Type {
+		case "ec2":
+			if isRunnable(current) {
+				ec2controller.StartInstance(s.ID)
+				fmt.Println("succeeded: start instance.")
+			} else {
+				ec2controller.StopInstance(s.ID)
+				fmt.Println("succeeded: stop instance.")
+			}
+		case "rds":
+			// TODO
 		}
 	}
 	return "succeded process", nil
