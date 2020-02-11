@@ -1,0 +1,23 @@
+######
+# - name: 'myserver'
+#   region: 'ap-northeast-1'
+#   type: 'ec2'
+#   id: 'i-*****'
+#
+# - name: 'rds'
+#   region: 'ap-northeast-1'
+#   type: 'rds'
+#   id: 'testdatabase'
+#
+# note: tokyo region is 'ap-northeast-1'
+#
+
+- name: 'myserver'
+  type: 'ec2'
+  id: 'i-xxxxx'
+  region: 'ap-northeast-1'
+
+- name: 'rds'
+  region: 'ap-northeast-1'
+  type: 'rds'
+  id: 'testdatabase'

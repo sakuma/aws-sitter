@@ -51,6 +51,7 @@
     "private/protocol/rest",
     "private/protocol/xml/xmlutil",
     "service/ec2",
+    "service/rds",
     "service/sts",
     "service/sts/stsiface",
   ]
@@ -81,6 +82,7 @@
     "github.com/aws/aws-sdk-go/aws",
     "github.com/aws/aws-sdk-go/aws/session",
     "github.com/aws/aws-sdk-go/service/ec2",
+    "github.com/aws/aws-sdk-go/service/rds",
     "gopkg.in/yaml.v2",
   ]
   solver-name = "gps-cdcl"

@@ -1,9 +1,0 @@
-- name: 'myserver'
-  region: 'ap-northeast-1'
-  type: 'ec2'
-  id: 'i-099f282532153947e'
-
-# - name: 'rds'
-#   region: 'ap-northeast-1'
-#   type: 'rds'
-#   id: 'testdatabase'

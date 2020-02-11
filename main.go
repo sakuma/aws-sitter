@@ -7,6 +7,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/lambda"
 	ec2controller "github.com/sakuma/aws-sitter/aws/ec2"
+	rdscontroller "github.com/sakuma/aws-sitter/aws/rds"
 	"github.com/sakuma/aws-sitter/lib/holiday"
 	"gopkg.in/yaml.v2"
 )
@@ -69,7 +70,13 @@ func Handler() (string, error) {
 				fmt.Println("succeeded: stop instance.")
 			}
 		case "rds":
-			// TODO
+			if isRunnable(current) {
+				rdscontroller.StartInstance(s.ID)
+				fmt.Println("succeeded: start instance.")
+			} else {
+				rdscontroller.StopInstance(s.ID)
+				fmt.Println("succeeded: stop instance.")
+			}
 		}
 	}
 	return "succeded process", nil
