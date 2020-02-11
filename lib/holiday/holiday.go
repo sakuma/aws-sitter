@@ -7,7 +7,13 @@ func IsHoliday(t time.Time) bool {
 	return t.Weekday() == time.Saturday || t.Weekday() == time.Sunday
 }
 
-func IsRunnable() bool {
-	// TODO
+func IsRunnable(t time.Time) bool {
+	switch {
+	case t.Hour() < 10:
+		return false
+	case t.Hour() < 22:
+		return true
+	default:
 	return false
+}
 }
