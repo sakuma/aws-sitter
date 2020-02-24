@@ -2,6 +2,7 @@ package rds
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -48,7 +49,11 @@ func Execute(region string) error {
 		}
 		result, _ := svc.ListTagsForResource(input)
 		for _, t := range result.TagList {
+			v := strings.TrimSpace(*t.Value)
 			switch *t.Key {
+			case "API_CONTROLLABLE":
+				b, _ := strconv.ParseBool(v)
+				instance.Controllable = b
 			case "API_AUTO_OPERATION_MODE":
 				instance.OperationMode = strings.TrimSpace(*t.Value)
 			case "API_RUN_SCHEDULE":

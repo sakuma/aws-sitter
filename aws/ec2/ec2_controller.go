@@ -2,6 +2,7 @@ package ec2
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -23,9 +24,9 @@ func getInstances(region string) []*ec2.Reservation {
 	filter := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
-				Name: aws.String("tag:API_CONTROLL_ON_OR_OFF"),
+				Name: aws.String("tag-key"),
 				Values: []*string{
-					aws.String("ON"),
+					aws.String("API_CONTROLLABLE"),
 				},
 			},
 		},
@@ -53,11 +54,16 @@ func Execute(region string) error {
 			instance.Name = *i.KeyName
 
 			for _, t := range i.Tags {
+				v := strings.TrimSpace(*t.Value)
 				switch *t.Key {
+				case "API_CONTROLLABLE":
+					b, _ := strconv.ParseBool(v)
+					instance.Controllable = b
 				case "API_AUTO_OPERATION_MODE":
-					instance.OperationMode = strings.TrimSpace(*t.Value)
+					// TODO: validation: [start,stop,auto]
+					instance.OperationMode = v
 				case "API_RUN_SCHEDULE":
-					instance.RunSchedule = *t.Value
+					instance.RunSchedule = v
 				}
 			}
 			if instance.OperationMode == "stop" {

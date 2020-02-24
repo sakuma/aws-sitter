@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	// ec2ctrl "github.com/sakuma/aws-sitter/aws/ec2"
 	"github.com/sakuma/aws-sitter/lib/holiday"
 )
 
@@ -18,15 +17,11 @@ type Instance struct {
 	Name          string
 	ResourceType  string
 	ID            string
+	Controllable  bool
 	StopOnly      bool
 	State         string
 	OperationMode string
 	RunSchedule   string
-}
-
-func (i *Instance) isForceRunnable() bool {
-	// TODO:
-	return i.OperationMode == "start"
 }
 
 func (i *Instance) IsRunning() bool {
@@ -49,14 +44,11 @@ func (i *Instance) IsStopped() bool {
 	return i.State == "stopped"
 }
 
-func (i *Instance) isRunnable(t time.Time) bool {
-	if i.StopOnly {
-		return false
-	}
+func (i *Instance) isWithinScheduleTime(t time.Time) bool {
 	// TODO: invalid format check
 	times := strings.Split(i.RunSchedule, "-")
-	from, _ := strconv.Atoi(times[0])
-	to, _ := strconv.Atoi(times[1])
+	from, _ := strconv.Atoi(strings.TrimSpace(times[0]))
+	to, _ := strconv.Atoi(strings.TrimSpace(times[1]))
 	if from <= t.Hour() && t.Hour() <= to {
 		return true
 	}
@@ -69,17 +61,14 @@ func IsActive(i Instance) bool {
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 	current := t.In(jst)
 
-	if i.isForceRunnable() {
-		return false
-	}
-
 	if holiday.IsHoliday(current) {
 		return false
 	}
 
-	if i.isRunnable(current) {
+	if i.isWithinScheduleTime(current) {
 		return true
 	}
+
 	return false
 }
 
