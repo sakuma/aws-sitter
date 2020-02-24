@@ -25,12 +25,15 @@ type Instance struct {
 }
 
 func (i *Instance) isForceRunnable() bool {
+	// TODO:
 	return i.OperationMode == "start"
 }
 
 func (i *Instance) IsRunning() bool {
+	// NOTE: rds status
+	// "available", "stopping"
 	switch i.State {
-	case "running":
+	case "running", "available":
 		return true
 	case "stopping", "stopped", "shutting", "terminated":
 		return false
@@ -40,6 +43,10 @@ func (i *Instance) IsRunning() bool {
 	default:
 		return false
 	}
+}
+
+func (i *Instance) IsStopped() bool {
+	return i.State == "stopped"
 }
 
 func (i *Instance) isRunnable(t time.Time) bool {
