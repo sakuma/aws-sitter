@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +13,8 @@ import (
 	// ec2ctrl "github.com/sakuma/aws-sitter/aws/ec2"
 	"github.com/sakuma/aws-sitter/lib/holiday"
 )
+
+var Verbose bool
 
 type Instance struct {
 	Region        string
@@ -81,4 +84,10 @@ func AwsSession(regionName string) *ec2.EC2 {
 		Region: aws.String(regionName),
 	}))
 	return session
+}
+
+func DebugPrint(a ...interface{}) {
+	if Verbose {
+		fmt.Println(a...)
+	}
 }

@@ -37,12 +37,9 @@ func getInstances(region string) []*ec2.Reservation {
 func Execute(region string) error {
 	res := getInstances(region)
 	for _, r := range res {
-		// fmt.Println("reservertion----------")
-		// fmt.Printf("%+v=n", r)
 		for _, i := range r.Instances {
 			instance := util.Instance{}
 			fmt.Println("instance ----------")
-			// fmt.Printf("%+v\n", i)
 			instance.Region = *i.Placement.AvailabilityZone
 			instance.ID = *i.InstanceId
 			instance.InstanceType = *i.InstanceType
