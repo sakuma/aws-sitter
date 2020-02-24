@@ -19,6 +19,7 @@ provider:
       Action:
         - ec2:StartInstances
         - ec2:StopInstances
+        - ec2:DescribeInstances
         - rds:StartDBInstance
         - rds:StopDBInstance
       Resource: "*"
