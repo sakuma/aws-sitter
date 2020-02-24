@@ -22,6 +22,8 @@ provider:
         - ec2:DescribeInstances
         - rds:StartDBInstance
         - rds:StopDBInstance
+        - rds:DescribeDBInstances
+        - rds:ListTagsForResource
       Resource: "*"
 
 package:
