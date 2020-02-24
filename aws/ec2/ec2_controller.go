@@ -7,10 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
 
-	// "github.com/sakuma/aws-sitter/lib/holiday"
 	"github.com/sakuma/aws-sitter/lib/util"
-	// "time"
-	// "reflect"
 )
 
 func getInstances(region string) []*ec2.Reservation {
