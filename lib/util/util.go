@@ -6,10 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
-
 	// ec2ctrl "github.com/sakuma/aws-sitter/aws/ec2"
 	"github.com/sakuma/aws-sitter/lib/holiday"
 )
@@ -20,6 +16,7 @@ type Instance struct {
 	Region        string
 	InstanceType  string
 	Name          string
+	ResourceType  string
 	ID            string
 	StopOnly      bool
 	State         string
@@ -77,13 +74,6 @@ func IsActive(i Instance) bool {
 		return true
 	}
 	return false
-}
-
-func AwsSession(regionName string) *ec2.EC2 {
-	session := ec2.New(session.New(&aws.Config{
-		Region: aws.String(regionName),
-	}))
-	return session
 }
 
 func DebugPrint(a ...interface{}) {

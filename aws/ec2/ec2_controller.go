@@ -5,13 +5,21 @@ import (
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 
 	"github.com/sakuma/aws-sitter/lib/util"
 )
 
+func awsSession(regionName string) *ec2.EC2 {
+	session := ec2.New(session.New(&aws.Config{
+		Region: aws.String(regionName),
+	}))
+	return session
+}
+
 func getInstances(region string) []*ec2.Reservation {
-	svc := util.AwsSession(region)
+	svc := awsSession(region)
 	filter := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
@@ -35,8 +43,9 @@ func Execute(region string) error {
 	res := getInstances(region)
 	for _, r := range res {
 		for _, i := range r.Instances {
+			util.DebugPrint("instance ----------")
 			instance := util.Instance{}
-			fmt.Println("instance ----------")
+			instance.ResourceType = "ec2"
 			instance.Region = *i.Placement.AvailabilityZone
 			instance.ID = *i.InstanceId
 			instance.InstanceType = *i.InstanceType
@@ -83,7 +92,7 @@ func Execute(region string) error {
 }
 
 func startInstance(region, instanceID string) (bool, error) {
-	svc := util.AwsSession(region)
+	svc := awsSession(region)
 	input := &ec2.StartInstancesInput{
 		InstanceIds: []*string{
 			aws.String(instanceID),
@@ -99,7 +108,7 @@ func startInstance(region, instanceID string) (bool, error) {
 }
 
 func stopInstance(region, instanceID string) (bool, error) {
-	svc := util.AwsSession(region)
+	svc := awsSession(region)
 	input := &ec2.StopInstancesInput{
 		InstanceIds: []*string{
 			aws.String(instanceID),
