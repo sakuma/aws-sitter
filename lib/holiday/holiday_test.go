@@ -31,39 +31,3 @@ func TestIsHoliday(t *testing.T) {
 		t.Fatal("got: true, should be false")
 	}
 }
-
-func TestIsRunnable(t *testing.T) {
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-	var tt time.Time
-	var got bool
-
-	tt = time.Date(2018, 5, 19, 9, 59, 59, 0, jst)
-	got = IsRunnable(tt)
-	if got != false {
-		t.Fatal("got: true, should be false")
-	}
-
-	tt = time.Date(2018, 5, 19, 10, 00, 00, 0, jst)
-	got = IsRunnable(tt)
-	if got != true {
-		t.Fatal("got: false, should be true")
-	}
-
-	tt = time.Date(2018, 5, 19, 15, 00, 00, 0, jst)
-	got = IsRunnable(tt)
-	if got != true {
-		t.Fatal("got: false, should be true")
-	}
-
-	tt = time.Date(2018, 5, 19, 21, 59, 59, 0, jst)
-	got = IsRunnable(tt)
-	if got != true {
-		t.Fatal("got: false, should be true")
-	}
-
-	tt = time.Date(2018, 5, 19, 22, 00, 00, 0, jst)
-	got = IsRunnable(tt)
-	if got != false {
-		t.Fatal("got: false, should be true")
-	}
-}
