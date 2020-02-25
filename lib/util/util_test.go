@@ -6,6 +6,53 @@ import (
 	"time"
 )
 
+func TestIsRunning(t *testing.T) {
+	var got bool
+	i := Instance{}
+
+	i.State = "running"
+	got = i.IsRunning()
+	if got != true {
+		t.Fatal("got: false, should be true")
+	}
+
+	i.State = "available"
+	got = i.IsRunning()
+	if got != true {
+		t.Fatal("got: false, should be true")
+	}
+
+	i.State = "stopping"
+	got = i.IsRunning()
+	if got != false {
+		t.Fatal("got: true, should be false")
+	}
+
+	i.State = "stopped"
+	got = i.IsRunning()
+	if got != false {
+		t.Fatal("got: true, should be false")
+	}
+
+	i.State = "shutting"
+	got = i.IsRunning()
+	if got != false {
+		t.Fatal("got: true, should be false")
+	}
+
+	i.State = "terminated"
+	got = i.IsRunning()
+	if got != false {
+		t.Fatal("got: true, should be false")
+	}
+
+	i.State = "hoge"
+	got = i.IsRunning()
+	if got != false {
+		t.Fatal("got: true, should be false")
+	}
+}
+
 func TestIsWithinScheduleTime(t *testing.T) {
 
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
@@ -17,7 +64,7 @@ func TestIsWithinScheduleTime(t *testing.T) {
 	tt = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
 	got = i.isWithinScheduleTime(tt)
 	if got != false {
-		t.Fatal("got: false, should be true")
+		t.Fatal("got: true, should be false")
 	}
 
 	// in time (10:00)
@@ -45,7 +92,7 @@ func TestIsWithinScheduleTime(t *testing.T) {
 	tt = time.Date(2019, 8, 31, 20, 00, 0, 0, jst)
 	got = i.isWithinScheduleTime(tt)
 	if got != false {
-		t.Fatal("got: false, should be true")
+		t.Fatal("got: true, should be false")
 	}
 
 	// out of range (20:01)
@@ -53,6 +100,14 @@ func TestIsWithinScheduleTime(t *testing.T) {
 	got = i.isWithinScheduleTime(tt)
 	fmt.Println(got)
 	if got != false {
-		t.Fatal("got: false, should be true")
+		t.Fatal("got: true, should be false")
 	}
+}
+
+func TestIsStopped(t *testing.T) {
+	// TODO
+}
+
+func TestIsActive(t *testing.T) {
+	// TODO
 }
