@@ -10,7 +10,7 @@ func TestIsRunning(t *testing.T) {
 	var got bool
 	i := Instance{}
 
-	i.State = "runningg"
+	i.State = "running"
 	got = i.IsRunning()
 	if got != true {
 		t.Fatal("got: false, should be true")
