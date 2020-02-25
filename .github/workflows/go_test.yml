@@ -1,5 +1,9 @@
 name: Go Test
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request: *
 jobs:
   build:
     name: Build
@@ -35,6 +39,3 @@ jobs:
               dep ensure
           fi
           go test ./...
-
-      # - name: Test
-      #   run: |
