@@ -20,14 +20,20 @@ jobs:
 
       - name: Get dependencies
         run: |
-          mkdir $GOPATH/bin
+          export GOPATH=$HOME/go
+          export GOBIN=$(go env GOPATH)/bin
+          export PATH=$PATH:$GOPATH
+          export PATH=$PATH:$GOBIN
+          mkdir -p $GOPATH/pkg
+          mkdir -p $GOBIN
+          mkdir -p $GOPATH/src/github.com/$GITHUB_REPOSITORY
+          mv ./* $GOPATH/src/github.com/$GITHUB_REPOSITORY
+          cd $GOPATH/src/github.com/$GITHUB_REPOSITORY
+          go get -v -t -d ./...
           if [ -f Gopkg.toml ]; then
               curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-              dep ensure -v
+              dep ensure
           fi
-
-      - name: Build
-        run: go build -v .
 
       - name: Test
         run: go test ./...
