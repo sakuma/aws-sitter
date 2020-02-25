@@ -41,7 +41,13 @@ func (i *Instance) IsRunning() bool {
 }
 
 func (i *Instance) IsStopped() bool {
-	return i.State == "stopped"
+	list := []string{"stopping", "stopped", "shutting", "terminated"}
+	for _, s := range list {
+		if s == i.State {
+			return true
+		}
+	}
+	return false
 }
 
 func (i *Instance) isWithinScheduleTime(t time.Time) bool {

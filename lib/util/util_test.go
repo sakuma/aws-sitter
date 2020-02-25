@@ -53,6 +53,42 @@ func TestIsRunning(t *testing.T) {
 	}
 }
 
+func TestIsStopped(t *testing.T) {
+	var got bool
+	i := Instance{}
+
+	i.State = "stopped"
+	got = i.IsStopped()
+	if got != true {
+		t.Fatal("got: false, should be true")
+	}
+
+	i.State = "stopping"
+	got = i.IsStopped()
+	if got != true {
+		t.Fatal("got: false, should be true")
+	}
+
+	i.State = "shutting"
+	got = i.IsStopped()
+	if got != true {
+		t.Fatal("got: false, should be true")
+	}
+
+	i.State = "terminated"
+	got = i.IsStopped()
+	if got != true {
+		t.Fatal("got: false, should be true")
+	}
+
+	i.State = "running"
+	got = i.IsStopped()
+	if got != false {
+		t.Fatal("got: true, should be false")
+	}
+}
+
+
 func TestIsWithinScheduleTime(t *testing.T) {
 
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
@@ -102,10 +138,6 @@ func TestIsWithinScheduleTime(t *testing.T) {
 	if got != false {
 		t.Fatal("got: true, should be false")
 	}
-}
-
-func TestIsStopped(t *testing.T) {
-	// TODO
 }
 
 func TestIsActive(t *testing.T) {
