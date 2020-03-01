@@ -1,11 +1,10 @@
 .PHONY: build clean deploy
 
 build:
-	dep ensure -v
-	env GOOS=linux go build -ldflags="-s -w" -o bin/timer
+	env GOOS=linux go build -ldflags="-s -w" -o bin/timer -mod=vendor
 
 clean:
-	rm -rf ./bin ./vendor Gopkg.lock
+	rm -rf ./bin ./vendor
 
 deploy: clean build
 	sls deploy --verbose
