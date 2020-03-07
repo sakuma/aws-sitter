@@ -1,6 +1,6 @@
 module github.com/sakuma/aws-sitter
 
-go 1.13
+go 1.14
 
 require (
 	github.com/aws/aws-lambda-go v1.14.0
