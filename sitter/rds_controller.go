@@ -1,4 +1,4 @@
-package rds
+package sitter
 
 import (
 	"fmt"
@@ -12,15 +12,19 @@ import (
 	"github.com/sakuma/aws-sitter/lib/util"
 )
 
-func awsSession(regionName string) *rds.RDS {
+type RDS struct {
+	Instance
+}
+
+func (r RDS) awsSession() *rds.RDS {
 	session := rds.New(session.New(&aws.Config{
-		Region: aws.String(regionName),
+		Region: aws.String(r.Region),
 	}))
 	return session
 }
 
-func getInstances(region string) []*rds.DBInstance {
-	svc := awsSession(region)
+func (r RDS) getInstances() []*rds.DBInstance {
+	svc := r.awsSession()
 	filter := &rds.DescribeDBInstancesInput{}
 	res, err := svc.DescribeDBInstances(filter)
 	if err != nil {
@@ -30,13 +34,13 @@ func getInstances(region string) []*rds.DBInstance {
 	return res.DBInstances
 }
 
-func Execute(region string) error {
-	res := getInstances(region)
-	svc := awsSession(region)
+func (r RDS) Execute() error {
+	res := r.getInstances()
+	svc := r.awsSession()
 	for _, i := range res {
 		util.DebugPrint("instance ----------")
 		// fmt.Printf("%+v\n", i)
-		instance := util.Instance{}
+		instance := RDS{}
 		instance.ResourceType = "rds"
 		instance.Region = *i.AvailabilityZone
 		instance.Name = *i.DBInstanceIdentifier
@@ -55,7 +59,8 @@ func Execute(region string) error {
 				b, _ := strconv.ParseBool(v)
 				instance.Controllable = b
 			case "API_AUTO_OPERATION_MODE":
-				instance.OperationMode = strings.TrimSpace(*t.Value)
+				modeValue := strings.TrimSpace(*t.Value)
+				instance.OperationMode = strings.ToLower(modeValue)
 			case "API_RUN_SCHEDULE":
 				instance.RunSchedule = *t.Value
 			}
@@ -70,7 +75,7 @@ func Execute(region string) error {
 				fmt.Println("Already Started : ", instance.ID)
 			}
 			if instance.IsStopped() {
-				_, err := startInstance(region, instance.ID)
+				_, err := instance.startInstance()
 				if err == nil {
 					fmt.Println("Start instance: ", instance.ID)
 				} else {
@@ -81,7 +86,7 @@ func Execute(region string) error {
 			}
 		} else {
 			if instance.IsRunning() {
-				_, err := stopInstance(region, instance.ID)
+				_, err := instance.stopInstance()
 				if err != nil {
 					fmt.Println("Error: ", instance.ID, ": ", err)
 				}
@@ -94,10 +99,10 @@ func Execute(region string) error {
 	return nil
 }
 
-func startInstance(region, instanceID string) (bool, error) {
-	svc := awsSession(region)
+func (r RDS) startInstance() (bool, error) {
+	svc := r.awsSession()
 	input := &rds.StartDBInstanceInput{
-		DBInstanceIdentifier: aws.String(instanceID),
+		DBInstanceIdentifier: aws.String(r.ID),
 	}
 	_, err := svc.StartDBInstance(input)
 	if err != nil {
@@ -106,10 +111,10 @@ func startInstance(region, instanceID string) (bool, error) {
 	return true, nil
 }
 
-func stopInstance(region, instanceID string) (bool, error) {
-	svc := awsSession(region)
+func (r RDS) stopInstance() (bool, error) {
+	svc := r.awsSession()
 	input := &rds.StopDBInstanceInput{
-		DBInstanceIdentifier: aws.String(instanceID),
+		DBInstanceIdentifier: aws.String(r.ID),
 	}
 	_, err := svc.StopDBInstance(input)
 	if err != nil {

@@ -1,4 +1,4 @@
-package ec2
+package sitter
 
 import (
 	"fmt"
@@ -12,15 +12,19 @@ import (
 	"github.com/sakuma/aws-sitter/lib/util"
 )
 
-func awsSession(regionName string) *ec2.EC2 {
+type EC2 struct {
+	Instance
+}
+
+func (e EC2) awsSession() *ec2.EC2 {
 	session := ec2.New(session.New(&aws.Config{
-		Region: aws.String(regionName),
+		Region: aws.String(e.Region),
 	}))
 	return session
 }
 
-func getInstances(region string) []*ec2.Reservation {
-	svc := awsSession(region)
+func (e EC2) getInstances() []*ec2.Reservation {
+	svc := e.awsSession()
 	filter := &ec2.DescribeInstancesInput{
 		Filters: []*ec2.Filter{
 			{
@@ -40,12 +44,12 @@ func getInstances(region string) []*ec2.Reservation {
 }
 
 //
-func Execute(region string) error {
-	res := getInstances(region)
+func (e EC2) Execute() error {
+	res := e.getInstances()
 	for _, r := range res {
 		for _, i := range r.Instances {
 			util.DebugPrint("instance ----------")
-			instance := util.Instance{}
+			instance := EC2{}
 			instance.ResourceType = "ec2"
 			instance.Region = *i.Placement.AvailabilityZone
 			instance.ID = *i.InstanceId
@@ -74,7 +78,7 @@ func Execute(region string) error {
 				if instance.IsRunning() {
 					fmt.Println("Already Started : ", instance.ID)
 				} else {
-					_, err := startInstance(region, instance.ID)
+					_, err := instance.startInstance()
 					if err == nil {
 						fmt.Println("Start instance: ", instance.ID)
 					} else {
@@ -83,7 +87,7 @@ func Execute(region string) error {
 				}
 			} else {
 				if instance.IsRunning() {
-					_, err := stopInstance(region, instance.ID)
+					_, err := instance.stopInstance()
 					if err != nil {
 						fmt.Println("Error: ", instance.ID, ": ", err)
 					}
@@ -97,11 +101,11 @@ func Execute(region string) error {
 	return nil
 }
 
-func startInstance(region, instanceID string) (bool, error) {
-	svc := awsSession(region)
+func (e EC2) startInstance() (bool, error) {
+	svc := e.awsSession()
 	input := &ec2.StartInstancesInput{
 		InstanceIds: []*string{
-			aws.String(instanceID),
+			aws.String(e.ID),
 		},
 	}
 	_, err := svc.StartInstances(input)
@@ -113,11 +117,11 @@ func startInstance(region, instanceID string) (bool, error) {
 	return true, err
 }
 
-func stopInstance(region, instanceID string) (bool, error) {
-	svc := awsSession(region)
+func (e EC2) stopInstance() (bool, error) {
+	svc := e.awsSession()
 	input := &ec2.StopInstancesInput{
 		InstanceIds: []*string{
-			aws.String(instanceID),
+			aws.String(e.ID),
 		},
 	}
 	_, err := svc.StopInstances(input)

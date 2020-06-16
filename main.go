@@ -4,8 +4,9 @@ import (
 	"flag"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	ec2Ctrl "github.com/sakuma/aws-sitter/aws/ec2"
-	rdsCtrl "github.com/sakuma/aws-sitter/aws/rds"
+	// sitter "github.com/sakuma/aws-sitter/aws"
+	// ec2Ctrl "github.com/sakuma/aws-sitter/aws/ec2"
+	rdsCtrl "github.com/sakuma/aws-sitter/sitter"
 	"github.com/sakuma/aws-sitter/lib/util"
 )
 
@@ -19,7 +20,8 @@ func Handler() (string, error) {
 	util.DebugPrint("start...")
 
 	// TODO: error handling
-	ec2Ctrl.Execute(region)
+	// sitter.Execute(region)
+	// ec2Ctrl.Execute(region)
 	rdsCtrl.Execute(region)
 	return "succeded process", nil
 }
