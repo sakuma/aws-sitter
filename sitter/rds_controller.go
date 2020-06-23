@@ -13,6 +13,7 @@ import (
 )
 
 type RDS struct {
+	Region string
 	Instance
 }
 
@@ -40,9 +41,9 @@ func (r RDS) Execute() error {
 	for _, i := range res {
 		util.DebugPrint("instance ----------")
 		// fmt.Printf("%+v\n", i)
-		instance := RDS{}
+		instance := Instance{}
 		instance.ResourceType = "rds"
-		instance.Region = *i.AvailabilityZone
+		instance.AvailabilityZone = *i.AvailabilityZone
 		instance.Name = *i.DBInstanceIdentifier
 		instance.ID = *i.DBInstanceIdentifier // same
 		instance.InstanceType = *i.DBInstanceClass
@@ -69,13 +70,14 @@ func (r RDS) Execute() error {
 			}
 		}
 		fmt.Printf("%+v\n", instance)
+		rds := RDS{Region: r.Region, Instance: instance}
 
-		if util.IsActive(instance) {
+		if instance.IsActive() {
 			if instance.IsRunning() {
 				fmt.Println("Already Started : ", instance.ID)
 			}
 			if instance.IsStopped() {
-				_, err := instance.startInstance()
+				_, err := rds.startInstance()
 				if err == nil {
 					fmt.Println("Start instance: ", instance.ID)
 				} else {
@@ -86,7 +88,7 @@ func (r RDS) Execute() error {
 			}
 		} else {
 			if instance.IsRunning() {
-				_, err := instance.stopInstance()
+				_, err := rds.stopInstance()
 				if err != nil {
 					fmt.Println("Error: ", instance.ID, ": ", err)
 				}
@@ -102,7 +104,7 @@ func (r RDS) Execute() error {
 func (r RDS) startInstance() (bool, error) {
 	svc := r.awsSession()
 	input := &rds.StartDBInstanceInput{
-		DBInstanceIdentifier: aws.String(r.ID),
+		DBInstanceIdentifier: aws.String(r.Instance.ID),
 	}
 	_, err := svc.StartDBInstance(input)
 	if err != nil {
@@ -114,7 +116,7 @@ func (r RDS) startInstance() (bool, error) {
 func (r RDS) stopInstance() (bool, error) {
 	svc := r.awsSession()
 	input := &rds.StopDBInstanceInput{
-		DBInstanceIdentifier: aws.String(r.ID),
+		DBInstanceIdentifier: aws.String(r.Instance.ID),
 	}
 	_, err := svc.StopDBInstance(input)
 	if err != nil {

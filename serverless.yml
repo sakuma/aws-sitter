@@ -20,6 +20,8 @@ provider:
         - ec2:StartInstances
         - ec2:StopInstances
         - ec2:DescribeInstances
+        - ec2:DescribeInstanceAttribute
+        - ec2:DescribeInstanceStatus
         - rds:StartDBInstance
         - rds:StopDBInstance
         - rds:DescribeDBInstances

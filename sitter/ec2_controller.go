@@ -13,12 +13,14 @@ import (
 )
 
 type EC2 struct {
+	Region string
 	Instance
 }
 
 func (e EC2) awsSession() *ec2.EC2 {
 	session := ec2.New(session.New(&aws.Config{
-		Region: aws.String(e.Region),
+		Region:   aws.String(e.Region),
+		// LogLevel: aws.LogLevel(aws.LogDebugWithRequestErrors | aws.LogDebugWithRequestRetries),
 	}))
 	return session
 }
@@ -49,9 +51,9 @@ func (e EC2) Execute() error {
 	for _, r := range res {
 		for _, i := range r.Instances {
 			util.DebugPrint("instance ----------")
-			instance := EC2{}
+			instance := Instance{}
 			instance.ResourceType = "ec2"
-			instance.Region = *i.Placement.AvailabilityZone
+			instance.AvailabilityZone = *i.Placement.AvailabilityZone
 			instance.ID = *i.InstanceId
 			instance.InstanceType = *i.InstanceType
 			instance.State = *i.State.Name
@@ -74,11 +76,13 @@ func (e EC2) Execute() error {
 				instance.StopOnly = true
 			}
 			fmt.Printf("%+v\n", instance)
-			if util.IsActive(instance) {
+			ec2 := EC2{Region: e.Region, Instance: instance}
+
+			if instance.IsActive() {
 				if instance.IsRunning() {
 					fmt.Println("Already Started : ", instance.ID)
 				} else {
-					_, err := instance.startInstance()
+					_, err := ec2.startInstance()
 					if err == nil {
 						fmt.Println("Start instance: ", instance.ID)
 					} else {
@@ -87,7 +91,7 @@ func (e EC2) Execute() error {
 				}
 			} else {
 				if instance.IsRunning() {
-					_, err := instance.stopInstance()
+					_, err := ec2.stopInstance()
 					if err != nil {
 						fmt.Println("Error: ", instance.ID, ": ", err)
 					}
@@ -105,7 +109,7 @@ func (e EC2) startInstance() (bool, error) {
 	svc := e.awsSession()
 	input := &ec2.StartInstancesInput{
 		InstanceIds: []*string{
-			aws.String(e.ID),
+			aws.String(e.Instance.ID),
 		},
 	}
 	_, err := svc.StartInstances(input)
@@ -121,7 +125,7 @@ func (e EC2) stopInstance() (bool, error) {
 	svc := e.awsSession()
 	input := &ec2.StopInstancesInput{
 		InstanceIds: []*string{
-			aws.String(e.ID),
+			aws.String(e.Instance.ID),
 		},
 	}
 	_, err := svc.StopInstances(input)
