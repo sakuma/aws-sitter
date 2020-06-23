@@ -72,6 +72,10 @@ func (r RDS) Execute() error {
 		fmt.Printf("%+v\n", instance)
 		rds := RDS{Region: r.Region, Instance: instance}
 
+		if !instance.Controllable {
+			continue
+		}
+
 		if instance.IsActive() {
 			if instance.IsRunning() {
 				fmt.Println("Already Started : ", instance.ID)
