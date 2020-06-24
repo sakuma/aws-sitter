@@ -19,7 +19,7 @@ type EC2 struct {
 
 func (e EC2) awsSession() *ec2.EC2 {
 	session := ec2.New(session.New(&aws.Config{
-		Region:   aws.String(e.Region),
+		Region: aws.String(e.Region),
 		// LogLevel: aws.LogLevel(aws.LogDebugWithRequestErrors | aws.LogDebugWithRequestRetries),
 	}))
 	return session
@@ -78,27 +78,28 @@ func (e EC2) Execute() error {
 			fmt.Printf("%+v\n", instance)
 			ec2 := EC2{Region: e.Region, Instance: instance}
 
-			if instance.IsActive() {
-				if instance.IsRunning() {
-					fmt.Println("Already Started : ", instance.ID)
+			if !instance.Controllable {
+				continue
+			}
+
+			mode := instance.executeMode()
+			switch mode {
+			case "start":
+				_, err := ec2.startInstance()
+				if err == nil {
+					fmt.Println("Start instance: ", instance.ID)
 				} else {
-					_, err := ec2.startInstance()
-					if err == nil {
-						fmt.Println("Start instance: ", instance.ID)
-					} else {
-						fmt.Println("Error: ", instance.ID, ": ", err)
-					}
+					fmt.Println("Error: ", instance.ID, ": ", err)
 				}
-			} else {
-				if instance.IsRunning() {
-					_, err := ec2.stopInstance()
-					if err != nil {
-						fmt.Println("Error: ", instance.ID, ": ", err)
-					}
+			case "stop":
+				_, err := ec2.stopInstance()
+				if err == nil {
 					fmt.Println("Stop instance: ", instance.ID)
 				} else {
-					fmt.Println("Already stop instance: ", instance.ID)
+					fmt.Println("Error: ", instance.ID, ": ", err)
 				}
+			default:
+				continue
 			}
 		}
 	}

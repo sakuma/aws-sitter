@@ -76,30 +76,24 @@ func (r RDS) Execute() error {
 			continue
 		}
 
-		if instance.IsActive() {
-			if instance.IsRunning() {
-				fmt.Println("Already Started : ", instance.ID)
-			}
-			if instance.IsStopped() {
-				_, err := rds.startInstance()
-				if err == nil {
-					fmt.Println("Start instance: ", instance.ID)
-				} else {
-					fmt.Println("Error: ", instance.ID, ": ", err)
-				}
+		mode := instance.executeMode()
+		switch mode {
+		case "start":
+			_, err := rds.startInstance()
+			if err == nil {
+				fmt.Println("Start instance: ", instance.ID)
 			} else {
-				fmt.Println("Can not be start (instance processing): ", instance.ID)
+				fmt.Println("Error: ", instance.ID, ": ", err)
 			}
-		} else {
-			if instance.IsRunning() {
-				_, err := rds.stopInstance()
-				if err != nil {
-					fmt.Println("Error: ", instance.ID, ": ", err)
-				}
+		case "stop":
+			_, err := rds.stopInstance()
+			if err == nil {
 				fmt.Println("Stop instance: ", instance.ID)
 			} else {
-				fmt.Println("Already stop instance: ", instance.ID)
+				fmt.Println("Error: ", instance.ID, ": ", err)
 			}
+		default:
+			continue
 		}
 	}
 	return nil
