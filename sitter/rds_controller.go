@@ -69,7 +69,8 @@ func (r RDS) Execute() error {
 				instance.StopOnly = true
 			}
 		}
-		fmt.Printf("%+v\n", instance)
+		// fmt.Printf("%+v\n", instance)
+		instance.CurrentTime = util.SetCurrentTime(r.Region)
 		rds := RDS{Region: r.Region, Instance: instance}
 
 		if !instance.Controllable {

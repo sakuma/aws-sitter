@@ -75,7 +75,8 @@ func (e EC2) Execute() error {
 			if instance.OperationMode == "stop" {
 				instance.StopOnly = true
 			}
-			fmt.Printf("%+v\n", instance)
+			// fmt.Printf("%+v\n", instance)
+			instance.CurrentTime = util.SetCurrentTime(e.Region)
 			ec2 := EC2{Region: e.Region, Instance: instance}
 
 			if !instance.Controllable {

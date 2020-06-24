@@ -17,14 +17,15 @@ type Instance struct {
 	State            string
 	OperationMode    string
 	RunSchedule      string
+	CurrentTime      time.Time
 }
 
-func (i *Instance) isWithinScheduleTime(t time.Time) bool {
+func (i *Instance) isWithinScheduleTime() bool {
 	// TODO: invalid format check
 	times := strings.Split(i.RunSchedule, "-")
 	from, _ := strconv.Atoi(strings.TrimSpace(times[0]))
 	to, _ := strconv.Atoi(strings.TrimSpace(times[1]))
-	if from <= t.Hour() && t.Hour() <= to {
+	if from <= i.CurrentTime.Hour() && i.CurrentTime.Hour() <= to {
 		return true
 	}
 	return false
@@ -41,11 +42,7 @@ func (i *Instance) executeMode() string {
 			return "stop"
 		}
 	case "auto":
-		t := time.Now()
-		jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-		current := t.In(jst)
-
-		if i.isWithinScheduleTime(current) {
+		if i.isWithinScheduleTime() {
 			return "start"
 		} else {
 			return "stop"

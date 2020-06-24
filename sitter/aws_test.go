@@ -9,33 +9,31 @@ import (
 
 func TestIsWithinScheduleTime(t *testing.T) {
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-	var tt time.Time
-
 	i := Instance{RunSchedule: "10-19"}
 
 	// out of range(7:00)
-	tt = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(tt), false)
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
+	assert.Equal(t, i.isWithinScheduleTime(), false)
 
 	// in time (10:00)
-	tt = time.Date(2019, 8, 31, 10, 00, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(tt), true)
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 00, 0, 0, jst)
+	assert.Equal(t, i.isWithinScheduleTime(), true)
 
 	// in time (10:01)
-	tt = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(tt), true)
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, i.isWithinScheduleTime(), true)
 
 	// in time (19:59)
-	tt = time.Date(2019, 8, 31, 19, 59, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(tt), true)
+	i.CurrentTime = time.Date(2019, 8, 31, 19, 59, 0, 0, jst)
+	assert.Equal(t, i.isWithinScheduleTime(), true)
 
 	// out of range (20:00)
-	tt = time.Date(2019, 8, 31, 20, 00, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(tt), false)
+	i.CurrentTime = time.Date(2019, 8, 31, 20, 00, 0, 0, jst)
+	assert.Equal(t, i.isWithinScheduleTime(), false)
 
 	// out of range (20:01)
-	tt = time.Date(2019, 8, 31, 20, 01, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(tt), false)
+	i.CurrentTime = time.Date(2019, 8, 31, 20, 01, 0, 0, jst)
+	assert.Equal(t, i.isWithinScheduleTime(), false)
 }
 
 func TestIsRunning(t *testing.T) {
