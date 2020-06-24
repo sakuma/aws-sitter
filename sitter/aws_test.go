@@ -36,6 +36,81 @@ func TestIsWithinScheduleTime(t *testing.T) {
 	assert.Equal(t, i.isWithinScheduleTime(), false)
 }
 
+func TestExecuteMode(t *testing.T)  {
+	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+	i := Instance{RunSchedule: "10-19"}
+
+	////////////////
+	i.OperationMode = "start"
+
+	/////////
+	i.State = "stopped"
+
+	// out of range time
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+	// in time
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, "start", i.executeMode())
+
+	/////////
+	i.State = "running"
+
+	// out of range time
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst) // out of range(7:00)
+	assert.Equal(t, "none", i.executeMode())
+	// in time
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+
+	////////////////
+	i.OperationMode = "stop"
+
+	/////////
+	i.State = "stopped"
+
+	// out of range time
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+	// in time
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+
+	/////////
+	i.State = "running"
+
+	// out of range time
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst) // out of range(7:00)
+	assert.Equal(t, "stop", i.executeMode())
+	// in time
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+
+
+	////////////////
+	i.OperationMode = "auto"
+
+	/////////
+	i.State = "stopped"
+
+	// out of range time
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+	// in time
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, "start", i.executeMode())
+
+	/////////
+	i.State = "running"
+
+	// out of range time
+	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst) // out of range(7:00)
+	assert.Equal(t, "stop", i.executeMode())
+	// in time
+	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
+	assert.Equal(t, "none", i.executeMode())
+}
+
 func TestIsRunning(t *testing.T) {
 	i := Instance{}
 

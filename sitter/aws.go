@@ -34,37 +34,27 @@ func (i *Instance) isWithinScheduleTime() bool {
 func (i *Instance) executeMode() string {
 	switch i.OperationMode {
 	case "start":
-		if i.isShouldBeStart() {
+		if i.isStopped() && i.isWithinScheduleTime() {
 			return "start"
 		}
 	case "stop":
-		if i.isShouldBeStop() {
+		if i.isRunning() && !i.isWithinScheduleTime() {
 			return "stop"
 		}
 	case "auto":
 		if i.isWithinScheduleTime() {
-			return "start"
+			if i.isStopped() {
+				return "start"
+			}
 		} else {
-			return "stop"
+			if i.isRunning() {
+				return "stop"
+			}
 		}
 	default:
 		return "none"
 	}
 	return "none"
-}
-
-func (i *Instance) isShouldBeStart() bool {
-	if i.isStopped() {
-		return true
-	}
-	return false
-}
-
-func (i *Instance) isShouldBeStop() bool {
-	if i.isRunning() {
-		return true
-	}
-	return false
 }
 
 func (i *Instance) isRunning() bool {
