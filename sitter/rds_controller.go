@@ -2,7 +2,6 @@ package sitter
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -53,13 +52,11 @@ func (r RDS) Execute() error {
 		}
 		result, _ := svc.ListTagsForResource(input)
 		for _, t := range result.TagList {
-			v := strings.TrimSpace(*t.Value)
 			switch *t.Key {
 			case "API_CONTROLLABLE":
 				instance.setControllable(*t.Value)
 			case "API_AUTO_OPERATION_MODE":
-				modeValue := strings.TrimSpace(*t.Value)
-				instance.OperationMode = strings.ToLower(modeValue)
+				instance.setOperationMode(*t.Value)
 			case "API_RUN_SCHEDULE":
 				instance.RunSchedule = *t.Value
 			}

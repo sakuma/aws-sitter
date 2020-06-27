@@ -2,7 +2,6 @@ package sitter
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -59,15 +58,13 @@ func (e EC2) Execute() error {
 			instance.Name = *i.KeyName
 
 			for _, t := range i.Tags {
-				v := strings.TrimSpace(*t.Value)
 				switch *t.Key {
 				case "API_CONTROLLABLE":
 					instance.setControllable(*t.Value)
 				case "API_AUTO_OPERATION_MODE":
-					// TODO: validation: [start,stop,auto]
-					instance.OperationMode = v
+					instance.setOperationMode(*t.Value)
 				case "API_RUN_SCHEDULE":
-					instance.RunSchedule = v
+					instance.RunSchedule = *t.Value
 				}
 			}
 			if instance.OperationMode == "stop" {

@@ -89,6 +89,15 @@ func (i *Instance) setControllable(inputValue string) {
 	b, _ := strconv.ParseBool(inputValue)
 	i.Controllable = b
 }
-	b, _ := strconv.ParseBool(inputValue)
-	i.Controllable = b
+
+func (i *Instance) setOperationMode(inputValue string) {
+	var v string
+	v = strings.TrimSpace(inputValue)
+	v = strings.ToLower(v)
+
+	if v == "auto" || v == "start" || v == "stop" {
+		i.OperationMode = v
+	} else {
+		i.OperationMode = ""
+	}
 }

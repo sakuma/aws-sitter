@@ -36,7 +36,7 @@ func TestIsWithinScheduleTime(t *testing.T) {
 	assert.Equal(t, i.isWithinScheduleTime(), false)
 }
 
-func TestExecuteMode(t *testing.T)  {
+func TestExecuteMode(t *testing.T) {
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
 	i := Instance{RunSchedule: "10-19"}
 
@@ -85,7 +85,6 @@ func TestExecuteMode(t *testing.T)  {
 	// in time
 	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
 	assert.Equal(t, "none", i.executeMode())
-
 
 	////////////////
 	i.OperationMode = "auto"
@@ -155,7 +154,7 @@ func TestIsStopped(t *testing.T) {
 	assert.Equal(t, i.isStopped(), false)
 }
 
-func TestSetControllable(t *testing.T)  {
+func TestSetControllable(t *testing.T) {
 	i := Instance{}
 	var input string
 
@@ -198,4 +197,60 @@ func TestSetControllable(t *testing.T)  {
 	input = "0"
 	i.setControllable(input)
 	assert.Equal(t, i.Controllable, false)
+}
+
+func TestSetOperationMode(t *testing.T) {
+	var input string
+	i := Instance{}
+
+	input = "auto"
+	i.setOperationMode(input)
+
+	input = "AUTO"
+	i.setOperationMode(input)
+	assert.Equal(t, "auto", i.OperationMode)
+
+	input = " aUtO"
+	i.setOperationMode(input)
+	assert.Equal(t, "auto", i.OperationMode)
+
+	input = "   auTo    "
+	i.setOperationMode(input)
+	assert.Equal(t, "auto", i.OperationMode)
+
+	input = "start"
+	i.setOperationMode(input)
+	assert.Equal(t, "start", i.OperationMode)
+
+	input = "START"
+	i.setOperationMode(input)
+	assert.Equal(t, "start", i.OperationMode)
+
+	input = " Start"
+	i.setOperationMode(input)
+	assert.Equal(t, "start", i.OperationMode)
+
+	input = "   starT    "
+	i.setOperationMode(input)
+	assert.Equal(t, "start", i.OperationMode)
+
+	input = "stop"
+	i.setOperationMode(input)
+	assert.Equal(t, "stop", i.OperationMode)
+
+	input = "STOP"
+	i.setOperationMode(input)
+	assert.Equal(t, "stop", i.OperationMode)
+
+	input = " Stop"
+	i.setOperationMode(input)
+	assert.Equal(t, "stop", i.OperationMode)
+
+	input = "   stoP    "
+	i.setOperationMode(input)
+	assert.Equal(t, "stop", i.OperationMode)
+
+	input = "hoge"
+	i.setOperationMode(input)
+	assert.Equal(t, "", i.OperationMode)
 }
