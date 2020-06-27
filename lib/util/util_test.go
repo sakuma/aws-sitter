@@ -16,3 +16,19 @@ func TestSetCurrentTime(t *testing.T) {
 	zone, _ = current.Zone()
 	assert.Equal(t, zone, "Asia/Tokyo")
 }
+
+func TestMakeStrings(t *testing.T) {
+	var testCases = []struct {
+		min      int
+		max      int
+		expected string
+	}{
+		{1, 5, "12345"},
+		{3, 4, "34"},
+		{0, 3, "0123"},
+		{0, 0, "0"},
+	}
+	for _, tt := range testCases {
+		assert.Equal(t, tt.expected, MakeWeekStrings(tt.min, tt.max))
+	}
+}

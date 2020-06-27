@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 	// "github.com/sakuma/aws-sitter/lib/holiday"
@@ -37,6 +38,14 @@ func HyphenReplaceAll(v string) string {
 		"㆒", "-", // \u3192
 	)
 	return r.Replace(v)
+}
+
+func MakeWeekStrings(min, max int) string {
+    a := make([]string, max-min+1)
+    for i := range a {
+        a[i] = strconv.Itoa(min + i)
+    }
+    return strings.Join(a, "")
 }
 
 func DebugPrint(a ...interface{}) {
