@@ -149,47 +149,29 @@ func TestIsStopped(t *testing.T) {
 
 func TestSetControllable(t *testing.T) {
 	i := Instance{}
-	var input string
+	var testCases = []struct {
+		input    string
+		expected bool
+	}{
+		{"true", true},
+		{"True", true},
+		{"TRUE", true},
+		{"ｔｒｕｅ", true},
+		{"1", true},
+		{"t r u e", true},
 
-	input = "true"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, true)
+		{"false", false},
+		{"False", false},
+		{"FALSE", false},
+		{"　FA　LSE　", false},
+		{"no", false},
+		{"0", false},
+	}
 
-	input = "True"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, true)
-
-	input = "TRUE"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, true)
-
-	input = "ｔｒｕｅ"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, false)
-
-	input = "1"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, true)
-
-	input = "false"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, false)
-
-	input = "False"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, false)
-
-	input = "FALSE"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, false)
-
-	input = "no"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, false)
-
-	input = "0"
-	i.setControllable(input)
-	assert.Equal(t, i.Controllable, false)
+	for _, tt := range testCases {
+		i.setControllable(tt.input)
+		assert.Equal(t, tt.expected, i.Controllable)
+	}
 }
 
 func TestSetOperationMode(t *testing.T) {

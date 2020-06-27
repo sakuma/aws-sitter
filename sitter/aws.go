@@ -114,9 +114,9 @@ func (i *Instance) isStopped() bool {
 }
 
 func (i *Instance) setControllable(inputValue string) {
-	// NOTE: Full Width Char is false
-	// [Maybe][TODO]: convert to Full to Half
-	b, _ := strconv.ParseBool(inputValue)
+	v := width.Narrow.String(inputValue)
+	v = util.SpaceReplaceAll(v)
+	b, _ := strconv.ParseBool(v)
 	i.Controllable = b
 }
 
