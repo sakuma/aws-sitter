@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strings"
 	"time"
 	// "github.com/sakuma/aws-sitter/lib/holiday"
 )
@@ -16,6 +17,26 @@ func SetCurrentTime(regionName string) time.Time {
 		return t.In(jst)
 	}
 	return t
+}
+
+func SpaceReplaceAll(v string) string {
+	conveted := strings.ReplaceAll(v, "　", "")
+	return strings.ReplaceAll(conveted, " ", "")
+}
+
+func HyphenReplaceAll(v string) string {
+	r := strings.NewReplacer(
+		// \u**** to \u002D
+		"ー", "-", // \u30FC
+		"−", "-", // \u2212
+		"―", "-", // \u2015
+		"－", "-", // \uFF0D
+		"﹣", "-", // \uFE63
+		"⼀", "-", // \u2F00
+		"ー", "-", // \u30FC
+		"㆒", "-", // \u3192
+	)
+	return r.Replace(v)
 }
 
 func DebugPrint(a ...interface{}) {

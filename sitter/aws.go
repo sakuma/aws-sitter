@@ -4,6 +4,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/sakuma/aws-sitter/lib/util"
+	"golang.org/x/text/width"
 )
 
 type Instance struct {
@@ -100,4 +103,12 @@ func (i *Instance) setOperationMode(inputValue string) {
 	} else {
 		i.OperationMode = ""
 	}
+}
+
+func (i *Instance) setRunSchedule(inputValue string) {
+	v := inputValue
+	v = util.SpaceReplaceAll(v)
+	v = util.HyphenReplaceAll(v)
+	v = width.Narrow.String(v)
+	i.RunSchedule = v
 }

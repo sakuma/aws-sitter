@@ -64,7 +64,7 @@ func (e EC2) Execute() error {
 				case "API_AUTO_OPERATION_MODE":
 					instance.setOperationMode(*t.Value)
 				case "API_RUN_SCHEDULE":
-					instance.RunSchedule = *t.Value
+					instance.setRunSchedule(*t.Value)
 				}
 			}
 			if instance.OperationMode == "stop" {

@@ -254,3 +254,33 @@ func TestSetOperationMode(t *testing.T) {
 	i.setOperationMode(input)
 	assert.Equal(t, "", i.OperationMode)
 }
+
+func TestSetRunSchedule(t *testing.T) {
+	var testCases = []struct {
+		input    string
+		expected string
+	}{
+		{"10-19", "10-19"},
+		{"10 - 19", "10-19"},
+		{" 8-22", "8-22"},
+		{"8-22　", "8-22"}, // wide-width space
+		{"12-23 ", "12-23"},
+		{"  7-9  ", "7-9"},
+		{"１-２２", "1-22"},
+		// several fullwidth haypen
+		{"2ー１１", "2-11"},
+		{"3−１１", "3-11"},
+		{"4―１１", "4-11"},
+		{"5－１１", "5-11"},
+		{"6﹣11", "6-11"},
+		{"7⼀１１", "7-11"},
+		{"8ー１１", "8-11"},
+		{"9㆒１１", "9-11"},
+	}
+
+	for _, tt := range testCases {
+		i := Instance{}
+		i.setRunSchedule(tt.input)
+		assert.Equal(t, tt.expected, i.RunSchedule)
+	}
+}
