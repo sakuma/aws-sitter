@@ -121,8 +121,9 @@ func (i *Instance) setControllable(inputValue string) {
 }
 
 func (i *Instance) setOperationMode(inputValue string) {
-	var v string
-	v = strings.TrimSpace(inputValue)
+	v := inputValue
+	v = util.SpaceReplaceAll(v)
+	v = width.Narrow.String(v)
 	v = strings.ToLower(v)
 
 	if v == "auto" || v == "start" || v == "stop" {

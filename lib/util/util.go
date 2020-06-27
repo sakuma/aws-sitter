@@ -20,9 +20,12 @@ func SetCurrentTime(regionName string) time.Time {
 	return t
 }
 
-func SpaceReplaceAll(v string) string {
-	conveted := strings.ReplaceAll(v, "　", "")
-	return strings.ReplaceAll(conveted, " ", "")
+func SpaceReplaceAll(inputString string) string {
+	v := inputString
+	v = strings.TrimSpace(v)
+	v = strings.ReplaceAll(v, "　", "")
+	v = strings.ReplaceAll(v, " ", "")
+	return v
 }
 
 func HyphenReplaceAll(v string) string {

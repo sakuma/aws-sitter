@@ -175,59 +175,35 @@ func TestSetControllable(t *testing.T) {
 }
 
 func TestSetOperationMode(t *testing.T) {
-	var input string
 	i := Instance{}
+	var testCases = []struct {
+		mode     string
+		expected string
+	}{
+		{"auto", "auto"},
+		{"AUTO", "auto"},
+		{" aUtO", "auto"},
+		{"   auTo    ", "auto"},
+		{"ａuT　o", "auto"},
 
-	input = "auto"
-	i.setOperationMode(input)
+		{"start", "start"},
+		{"START", "start"},
+		{" Start　", "start"},
+		{" starT    ", "start"},
+		{" ｓtaR　T", "start"},
 
-	input = "AUTO"
-	i.setOperationMode(input)
-	assert.Equal(t, "auto", i.OperationMode)
+		{"stop", "stop"},
+		{"STOP", "stop"},
+		{"Stop", "stop"},
+		{" Stop\n", "stop"},
+		{"   stoP    ", "stop"},
 
-	input = " aUtO"
-	i.setOperationMode(input)
-	assert.Equal(t, "auto", i.OperationMode)
-
-	input = "   auTo    "
-	i.setOperationMode(input)
-	assert.Equal(t, "auto", i.OperationMode)
-
-	input = "start"
-	i.setOperationMode(input)
-	assert.Equal(t, "start", i.OperationMode)
-
-	input = "START"
-	i.setOperationMode(input)
-	assert.Equal(t, "start", i.OperationMode)
-
-	input = " Start"
-	i.setOperationMode(input)
-	assert.Equal(t, "start", i.OperationMode)
-
-	input = "   starT    "
-	i.setOperationMode(input)
-	assert.Equal(t, "start", i.OperationMode)
-
-	input = "stop"
-	i.setOperationMode(input)
-	assert.Equal(t, "stop", i.OperationMode)
-
-	input = "STOP"
-	i.setOperationMode(input)
-	assert.Equal(t, "stop", i.OperationMode)
-
-	input = " Stop"
-	i.setOperationMode(input)
-	assert.Equal(t, "stop", i.OperationMode)
-
-	input = "   stoP    "
-	i.setOperationMode(input)
-	assert.Equal(t, "stop", i.OperationMode)
-
-	input = "hoge"
-	i.setOperationMode(input)
-	assert.Equal(t, "", i.OperationMode)
+		{"hoge", ""},
+	}
+	for _, tt := range testCases {
+		i.setOperationMode(tt.mode)
+		assert.Equal(t, tt.expected, i.OperationMode)
+	}
 }
 
 func TestSetRunSchedule(t *testing.T) {
