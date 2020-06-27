@@ -154,3 +154,48 @@ func TestIsStopped(t *testing.T) {
 	i.State = "running"
 	assert.Equal(t, i.isStopped(), false)
 }
+
+func TestSetControllable(t *testing.T)  {
+	i := Instance{}
+	var input string
+
+	input = "true"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, true)
+
+	input = "True"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, true)
+
+	input = "TRUE"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, true)
+
+	input = "ｔｒｕｅ"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, false)
+
+	input = "1"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, true)
+
+	input = "false"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, false)
+
+	input = "False"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, false)
+
+	input = "FALSE"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, false)
+
+	input = "no"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, false)
+
+	input = "0"
+	i.setControllable(input)
+	assert.Equal(t, i.Controllable, false)
+}

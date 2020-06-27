@@ -82,3 +82,13 @@ func (i *Instance) isStopped() bool {
 	}
 	return false
 }
+
+func (i *Instance) setControllable(inputValue string) {
+	// NOTE: Full Width Char is false
+	// [Maybe][TODO]: convert to Full to Half
+	b, _ := strconv.ParseBool(inputValue)
+	i.Controllable = b
+}
+	b, _ := strconv.ParseBool(inputValue)
+	i.Controllable = b
+}

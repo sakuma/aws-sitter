@@ -2,7 +2,6 @@ package sitter
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -63,8 +62,7 @@ func (e EC2) Execute() error {
 				v := strings.TrimSpace(*t.Value)
 				switch *t.Key {
 				case "API_CONTROLLABLE":
-					b, _ := strconv.ParseBool(v)
-					instance.Controllable = b
+					instance.setControllable(*t.Value)
 				case "API_AUTO_OPERATION_MODE":
 					// TODO: validation: [start,stop,auto]
 					instance.OperationMode = v

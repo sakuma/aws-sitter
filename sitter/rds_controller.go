@@ -2,7 +2,6 @@ package sitter
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -57,8 +56,7 @@ func (r RDS) Execute() error {
 			v := strings.TrimSpace(*t.Value)
 			switch *t.Key {
 			case "API_CONTROLLABLE":
-				b, _ := strconv.ParseBool(v)
-				instance.Controllable = b
+				instance.setControllable(*t.Value)
 			case "API_AUTO_OPERATION_MODE":
 				modeValue := strings.TrimSpace(*t.Value)
 				instance.OperationMode = strings.ToLower(modeValue)
