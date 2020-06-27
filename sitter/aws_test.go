@@ -110,47 +110,41 @@ func TestExecuteMode(t *testing.T) {
 }
 
 func TestIsRunning(t *testing.T) {
-	i := Instance{}
+	var testCases = []struct {
+		state    string
+		expected bool
+	}{
+		{"running", true},
+		{"available", true},
+		{"stopping", false},
+		{"stopped", false},
+		{"shutting", false},
+		{"terminated", false},
+		{"hoge", false},
+	}
 
-	i.State = "running"
-	assert.Equal(t, i.isRunning(), true)
-
-	i.State = "available"
-	assert.Equal(t, i.isRunning(), true)
-
-	i.State = "stopping"
-	assert.Equal(t, i.isRunning(), false)
-
-	i.State = "stopped"
-	assert.Equal(t, i.isRunning(), false)
-
-	i.State = "shutting"
-	assert.Equal(t, i.isRunning(), false)
-
-	i.State = "terminated"
-	assert.Equal(t, i.isRunning(), false)
-
-	i.State = "hoge"
-	assert.Equal(t, i.isRunning(), false)
+	for _, tt := range testCases {
+		i := Instance{State: tt.state}
+		assert.Equal(t, tt.expected, i.isRunning())
+	}
 }
 
 func TestIsStopped(t *testing.T) {
-	i := Instance{}
+	var testCases = []struct {
+		state    string
+		expected bool
+	}{
+		{"stopped", true},
+		{"stopping", true},
+		{"shutting", true},
+		{"terminated", true},
+		{"running", false},
+	}
 
-	i.State = "stopped"
-	assert.Equal(t, i.isStopped(), true)
-
-	i.State = "stopping"
-	assert.Equal(t, i.isStopped(), true)
-
-	i.State = "shutting"
-	assert.Equal(t, i.isStopped(), true)
-
-	i.State = "terminated"
-	assert.Equal(t, i.isStopped(), true)
-
-	i.State = "running"
-	assert.Equal(t, i.isStopped(), false)
+	for _, tt := range testCases {
+		i := Instance{State: tt.state}
+		assert.Equal(t, tt.expected, i.isStopped())
+	}
 }
 
 func TestSetControllable(t *testing.T) {
