@@ -31,7 +31,10 @@ maintanance `tag`
   * `start` : Start only behavior. The start time is the start time specified in _API_RUN_SCHEDULE_.
   * `stop` : Stop only behavior. The stop time is the stop time specified in _API_RUN_SCHEDULE_.
 * API_RUN_SCHEDULE
-  * ex) 10-20  ※ 10am 〜 20pm
+  * [time range(Hour)]:[weekday num (Sun:0, Mon:1)]
+    * ex) 10-20  -> 10:00am 〜 20:59pm on every day
+    * ex) 8-19:1-5  -> 8:00am 〜 19:59pm on Mon 〜 Fri
+    * ex) 7-8:0,1,5  -> 7:00am 〜 8:59am on Sun, Mon, and Fri
 
 ### Note
 Run every [30 minutes](https://github.com/sakuma/aws-sitter/blob/master/serverless.yml#L42).

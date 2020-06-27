@@ -9,31 +9,30 @@ import (
 
 func TestIsWithinScheduleTime(t *testing.T) {
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-	i := Instance{RunSchedule: "10-19"}
 
-	// out of range(7:00)
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(), false)
+	var testCases = []struct {
+		runSchedule string
+		inputTime   time.Time
+		expected    bool
+	}{
+		{"10-20", time.Date(2011, 4, 30, 9, 59, 0, 0, jst), false},
+		{"10-20", time.Date(2011, 4, 30, 10, 00, 0, 0, jst), true},
+		{"10-20", time.Date(2011, 4, 30, 15, 00, 0, 0, jst), true},
+		{"10-20", time.Date(2011, 4, 30, 20, 59, 0, 0, jst), true},
+		{"10-20", time.Date(2011, 4, 30, 21, 00, 0, 0, jst), false},
 
-	// in time (10:00)
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 00, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(), true)
+		{"9-23:4-6", time.Date(2011, 4, 28, 16, 45, 0, 0, jst), true},
+		{"9-23:3-6", time.Date(2011, 4, 29, 16, 45, 0, 0, jst), true},
+		{"9-23:3-6", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), true},
+		{"9-23:3-5", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), false},
 
-	// in time (10:01)
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(), true)
-
-	// in time (19:59)
-	i.CurrentTime = time.Date(2019, 8, 31, 19, 59, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(), true)
-
-	// out of range (20:00)
-	i.CurrentTime = time.Date(2019, 8, 31, 20, 00, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(), false)
-
-	// out of range (20:01)
-	i.CurrentTime = time.Date(2019, 8, 31, 20, 01, 0, 0, jst)
-	assert.Equal(t, i.isWithinScheduleTime(), false)
+		{"9-23:3,6", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), true},
+		{"9-23:1,5", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), false},
+	}
+	for _, tt := range testCases {
+		i := Instance{RunSchedule: tt.runSchedule, CurrentTime: tt.inputTime}
+		assert.Equal(t, tt.expected, i.isWithinScheduleTime())
+	}
 }
 
 func TestExecuteMode(t *testing.T) {
@@ -276,6 +275,10 @@ func TestSetRunSchedule(t *testing.T) {
 		{"7⼀１１", "7-11"},
 		{"8ー１１", "8-11"},
 		{"9㆒１１", "9-11"},
+		{"12-34:1-5　", "12-34:1-5"},
+		{"12-34：1-5", "12-34:1-5"},
+		{"12-34:１-５", "12-34:1-5"},
+		{"12-34:１，３", "12-34:1,3"},
 	}
 
 	for _, tt := range testCases {

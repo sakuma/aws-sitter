@@ -25,7 +25,34 @@ type Instance struct {
 
 func (i *Instance) isWithinScheduleTime() bool {
 	// TODO: invalid format check
-	times := strings.Split(i.RunSchedule, "-")
+	runSchedule := i.RunSchedule
+	splittedSchedule := strings.Split(i.RunSchedule, ":")
+	timeRange := splittedSchedule[0]
+	var weekdays string
+
+	// jadge of weekday
+	if strings.Contains(runSchedule, ":") {
+		weekdays = splittedSchedule[1]
+		switch {
+		case strings.Contains(weekdays, "-"):
+			weekRange := strings.Split(weekdays, "-")
+			weekdayString := strconv.Itoa(int(i.CurrentTime.Weekday()))
+			min, _ := strconv.Atoi(weekRange[0])
+			max, _ := strconv.Atoi(weekRange[1])
+			weekStrings := util.MakeWeekStrings(min, max)
+			if !strings.Contains(weekStrings, weekdayString) {
+				return false
+			}
+		case strings.Contains(weekdays, ","):
+			weekdayString := strconv.Itoa(int(i.CurrentTime.Weekday()))
+			if !strings.Contains(weekdays, weekdayString) {
+				return false
+			}
+		}
+	}
+
+	// jadge of time range
+	times := strings.Split(timeRange, "-")
 	from, _ := strconv.Atoi(strings.TrimSpace(times[0]))
 	to, _ := strconv.Atoi(strings.TrimSpace(times[1]))
 	if from <= i.CurrentTime.Hour() && i.CurrentTime.Hour() <= to {
