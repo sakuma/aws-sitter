@@ -1,6 +1,7 @@
 package sitter
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -36,77 +37,76 @@ func TestIsWithinScheduleTime(t *testing.T) {
 }
 
 func TestExecuteMode(t *testing.T) {
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-	i := Instance{RunSchedule: "10-19"}
+	var testCases = []struct {
+		mode        string
+		runSchedule string
+		state       string
+		currentTime time.Time
+		expected    string
+	}{
+		{"start", "10-19", "stopped", makeJST(2011, 4, 30, 9, 59), "none"},
+		{"start", "10-19", "stopped", makeJST(2011, 4, 30, 10, 0), "start"},
+		{"start", "10-19", "stopped", makeJST(2011, 4, 30, 19, 59), "start"},
+		{"start", "10-19", "stopped", makeJST(2011, 4, 30, 20, 0), "none"},
+		{"start", "10-19", "running", makeJST(2011, 4, 30, 9, 59), "none"},
+		{"start", "10-19", "running", makeJST(2011, 4, 30, 10, 0), "none"},
+		{"start", "10-19", "running", makeJST(2011, 4, 30, 19, 59), "none"},
+		{"start", "10-19", "running", makeJST(2011, 4, 30, 20, 0), "none"},
 
-	////////////////
-	i.OperationMode = "start"
+		{"start", "9-22:1-5", "stopped", makeJST(2011, 4, 29, 8, 59), "none"},
+		{"start", "9-22:1-5", "stopped", makeJST(2011, 4, 29, 9, 00), "start"},
+		{"start", "9-22:3,5", "stopped", makeJST(2011, 4, 29, 9, 00), "start"},
+		{"start", "9-22:3,5", "stopped", makeJST(2011, 4, 29, 22, 59), "start"},
+		{"start", "9-22:1-5", "running", makeJST(2011, 4, 29, 8, 59), "none"},
+		{"start", "9-22:1-5", "running", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"start", "9-22:3,5", "running", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"start", "9-22:3,5", "running", makeJST(2011, 4, 29, 22, 59), "none"},
 
-	/////////
-	i.State = "stopped"
+		{"stop", "10-19", "stopped", makeJST(2011, 4, 30, 9, 59), "none"},
+		{"stop", "10-19", "stopped", makeJST(2011, 4, 30, 10, 0), "none"},
+		{"stop", "10-19", "stopped", makeJST(2011, 4, 30, 19, 59), "none"},
+		{"stop", "10-19", "stopped", makeJST(2011, 4, 30, 20, 0), "none"},
+		{"stop", "10-19", "running", makeJST(2011, 4, 30, 9, 59), "stop"},
+		{"stop", "10-19", "running", makeJST(2011, 4, 30, 10, 0), "none"},
+		{"stop", "10-19", "running", makeJST(2011, 4, 30, 19, 59), "none"},
+		{"stop", "10-19", "running", makeJST(2011, 4, 30, 20, 0), "stop"},
 
-	// out of range time
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
-	// in time
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, "start", i.executeMode())
+		{"stop", "9-22:1-5", "stopped", makeJST(2011, 4, 29, 8, 59), "none"},
+		{"stop", "9-22:1-5", "stopped", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"stop", "9-22:3,5", "stopped", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"stop", "9-22:3,5", "stopped", makeJST(2011, 4, 29, 22, 59), "none"},
+		{"stop", "9-22:1-5", "running", makeJST(2011, 4, 29, 8, 59), "stop"},
+		{"stop", "9-22:1-5", "running", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"stop", "9-22:3,5", "running", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"stop", "9-22:3,5", "running", makeJST(2011, 4, 29, 23, 00), "stop"},
 
-	/////////
-	i.State = "running"
+		{"auto", "10-19", "stopped", makeJST(2011, 4, 30, 9, 59), "none"},
+		{"auto", "10-19", "stopped", makeJST(2011, 4, 30, 10, 0), "start"},
+		{"auto", "10-19", "stopped", makeJST(2011, 4, 30, 19, 59), "start"},
+		{"auto", "10-19", "stopped", makeJST(2011, 4, 30, 20, 0), "none"},
+		{"auto", "10-19", "running", makeJST(2011, 4, 30, 9, 59), "stop"},
+		{"auto", "10-19", "running", makeJST(2011, 4, 30, 10, 0), "none"},
+		{"auto", "10-19", "running", makeJST(2011, 4, 30, 19, 59), "none"},
+		{"auto", "10-19", "running", makeJST(2011, 4, 30, 20, 0), "stop"},
 
-	// out of range time
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst) // out of range(7:00)
-	assert.Equal(t, "none", i.executeMode())
-	// in time
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
-
-	////////////////
-	i.OperationMode = "stop"
-
-	/////////
-	i.State = "stopped"
-
-	// out of range time
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
-	// in time
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
-
-	/////////
-	i.State = "running"
-
-	// out of range time
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst) // out of range(7:00)
-	assert.Equal(t, "stop", i.executeMode())
-	// in time
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
-
-	////////////////
-	i.OperationMode = "auto"
-
-	/////////
-	i.State = "stopped"
-
-	// out of range time
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
-	// in time
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, "start", i.executeMode())
-
-	/////////
-	i.State = "running"
-
-	// out of range time
-	i.CurrentTime = time.Date(2019, 8, 31, 7, 00, 0, 0, jst) // out of range(7:00)
-	assert.Equal(t, "stop", i.executeMode())
-	// in time
-	i.CurrentTime = time.Date(2019, 8, 31, 10, 01, 0, 0, jst)
-	assert.Equal(t, "none", i.executeMode())
+		{"auto", "9-22:1-5", "stopped", makeJST(2011, 4, 29, 8, 59), "none"},
+		{"auto", "9-22:1-5", "stopped", makeJST(2011, 4, 29, 9, 00), "start"},
+		{"auto", "9-22:3,5", "stopped", makeJST(2011, 4, 29, 9, 00), "start"},
+		{"auto", "9-22:3,5", "stopped", makeJST(2011, 4, 29, 23, 00), "none"},
+		{"auto", "9-22:1-5", "running", makeJST(2011, 4, 29, 8, 59), "stop"},
+		{"auto", "9-22:1-5", "running", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"auto", "9-22:3,5", "running", makeJST(2011, 4, 29, 9, 00), "none"},
+		{"auto", "9-22:3,5", "running", makeJST(2011, 4, 29, 23, 00), "stop"},
+	}
+	for _, tt := range testCases {
+		i := Instance{
+			OperationMode: tt.mode,
+			RunSchedule:   tt.runSchedule,
+			State:         tt.state,
+			CurrentTime:   tt.currentTime,
+		}
+		assert.Equal(t, tt.expected, i.executeMode())
+	}
 }
 
 func TestIsRunning(t *testing.T) {
@@ -238,4 +238,11 @@ func TestSetRunSchedule(t *testing.T) {
 		i.setRunSchedule(tt.input)
 		assert.Equal(t, tt.expected, i.RunSchedule)
 	}
+}
+
+func makeJST(year, month, day, hour, minute int) time.Time {
+	timeString := fmt.Sprintf("%d-%02d-%02d %02d:%02d:00 JST",
+		year, month, day, hour, minute)
+	t, _ := time.Parse("2006-01-02 15:04:05 MST", timeString)
+	return t
 }
