@@ -9,26 +9,22 @@ import (
 )
 
 func TestIsWithinScheduleTime(t *testing.T) {
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-
 	var testCases = []struct {
 		runSchedule string
 		inputTime   time.Time
 		expected    bool
 	}{
-		{"10-20", time.Date(2011, 4, 30, 9, 59, 0, 0, jst), false},
-		{"10-20", time.Date(2011, 4, 30, 10, 00, 0, 0, jst), true},
-		{"10-20", time.Date(2011, 4, 30, 15, 00, 0, 0, jst), true},
-		{"10-20", time.Date(2011, 4, 30, 20, 59, 0, 0, jst), true},
-		{"10-20", time.Date(2011, 4, 30, 21, 00, 0, 0, jst), false},
-
-		{"9-23:4-6", time.Date(2011, 4, 28, 16, 45, 0, 0, jst), true},
-		{"9-23:3-6", time.Date(2011, 4, 29, 16, 45, 0, 0, jst), true},
-		{"9-23:3-6", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), true},
-		{"9-23:3-5", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), false},
-
-		{"9-23:3,6", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), true},
-		{"9-23:1,5", time.Date(2011, 4, 30, 16, 45, 0, 0, jst), false},
+		{"10-20", makeJST(2011, 4, 30, 9, 59), false},
+		{"10-20", makeJST(2011, 4, 30, 10, 00), true},
+		{"10-20", makeJST(2011, 4, 30, 15, 00), true},
+		{"10-20", makeJST(2011, 4, 30, 20, 59), true},
+		{"10-20", makeJST(2011, 4, 30, 21, 00), false},
+		{"9-23:4-6", makeJST(2011, 4, 28, 16, 45), true},
+		{"9-23:3-6", makeJST(2011, 4, 29, 16, 45), true},
+		{"9-23:3-6", makeJST(2011, 4, 30, 16, 45), true},
+		{"9-23:3-5", makeJST(2011, 4, 30, 16, 45), false},
+		{"9-23:3,6", makeJST(2011, 4, 30, 16, 45), true},
+		{"9-23:1,5", makeJST(2011, 4, 30, 16, 45), false},
 	}
 	for _, tt := range testCases {
 		i := Instance{RunSchedule: tt.runSchedule, CurrentTime: tt.inputTime}

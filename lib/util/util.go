@@ -14,7 +14,7 @@ func SetCurrentTime(regionName string) time.Time {
 	t := time.Now()
 	switch regionName {
 	case "ap-northeast-1":
-		jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+		jst, _ := time.LoadLocation("Asia/Tokyo")
 		return t.In(jst)
 	}
 	return t

@@ -6,7 +6,7 @@ import (
 )
 
 func TestIsHoliday(t *testing.T) {
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+	jst, _ := time.LoadLocation("Asia/Tokyo")
 	var tt time.Time
 	var got bool
 
