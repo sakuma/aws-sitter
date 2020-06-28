@@ -14,7 +14,7 @@ func TestSetCurrentTime(t *testing.T) {
 	region = "ap-northeast-1"
 	current = SetCurrentTime(region)
 	zone, _ = current.Zone()
-	assert.Equal(t, zone, "Asia/Tokyo")
+	assert.Equal(t, "JST", zone)
 }
 
 func TestMakeStrings(t *testing.T) {
